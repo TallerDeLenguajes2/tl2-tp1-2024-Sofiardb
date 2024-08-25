@@ -15,6 +15,7 @@ public class Cadete
         this.nombre = nombre;
         this.direccion = direccion;
         this.telefono = telefono;
+        pedidos = new List<Pedido>();
     }
 
     public int Id { get => id;}
@@ -38,5 +39,15 @@ public class Cadete
        var pedidoAQuitar = Pedidos.Where(p => p.Numero == numero).ToList();
        Pedidos.Remove(pedidoAQuitar[0]);
        return pedidoAQuitar[0];
+    }
+    public void RetirarPedido(int numero)
+    {
+        var pedidoAQuitar = Pedidos.Where(p => p.Numero == numero).ToList();
+        pedidoAQuitar[0].Estado = Estados.EnCamino;
+    }
+    public void CompletarPedido(int numero)
+    {
+        var pedidoAQuitar = Pedidos.Where(p => p.Numero == numero).ToList();
+        pedidoAQuitar[0].Estado = Estados.Entregado; 
     }
 }

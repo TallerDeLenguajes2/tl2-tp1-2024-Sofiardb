@@ -2,7 +2,7 @@ namespace Sistema
 {    
     public class Funciones
     {
-        public static void DarDeAltaPedido(List<Pedido> pedidosSinAsignar,int nroPedido)
+        public static Pedido DarDeAltaPedido(int nroPedido)
         {
             string observacionPedido;
             string nombreCliente;
@@ -25,17 +25,24 @@ namespace Sistema
                 {
                     Console.WriteLine("Debe rellenar correctamente los campos");
                 }
-            } while (observacionPedido.Length == 0 && nombreCliente.Length == 0 && direccCliente.Length == 0 && telefonoCliente.Length == 0);
+            } while (string.IsNullOrWhiteSpace(observacionPedido) || string.IsNullOrWhiteSpace(nombreCliente) || string.IsNullOrWhiteSpace(direccCliente) || string.IsNullOrWhiteSpace(telefonoCliente));
             Pedido pedidoNuevo = new Pedido(nroPedido,observacionPedido,nombreCliente,direccCliente,telefonoCliente,referenciasCliente);
-            pedidosSinAsignar.Add(pedidoNuevo);
+            return pedidoNuevo;
+            
         }
 
         public static void MostrarPedido(Pedido pedido)
         {
-            Console.WriteLine($"Pedido Nro: {pedido.Numero}");
-            Console.WriteLine($"Observaciones: {pedido.Observacion}");
-            Console.WriteLine($"Estado: {pedido.Estado}");
-            pedido.VerDatosCliente();
+            if (pedido != null)
+            {  
+                Console.WriteLine($"Pedido Nro: {pedido.Numero}");
+                Console.WriteLine($"Observaciones: {pedido.Observacion}");
+                Console.WriteLine($"Estado: {pedido.Estado}");
+                pedido.VerDatosCliente();
+            }else
+            {
+                Console.WriteLine("El pedido no existe");
+            }
         }
 
         public static void MostrarPedidosSinEntregar(Cadeteria cadeteria)
@@ -43,10 +50,17 @@ namespace Sistema
             foreach (var cadete in cadeteria.Cadetes)
             {
                 Console.WriteLine($"Cadete-{cadete.Nombre}");
-                foreach (var pedido in cadete.Pedidos.Where(p => p.Estado != Estados.Entregado).ToList())
+                var pedidosSinEntregar = cadete.Pedidos.Where(p => p.Estado != Estados.Entregado).ToList();
+                if(pedidosSinEntregar.Count != 0)
                 {
-                    Funciones.MostrarPedido(pedido);
-                }          
+                    foreach (var pedido in pedidosSinEntregar)
+                    {
+                        MostrarPedido(pedido);
+                    }          
+                }else
+                {
+                    Console.WriteLine("El cadete no tiene pedidos sin entregar");
+                }
             }
 
         }

@@ -1,15 +1,21 @@
+using System.ComponentModel;
+
 public class Pedido
 {
-    public int Numero { get; set; }
-    public string Observacion { get; set; }
+    private int numero;
 
+    private string observacion;
     private Cliente cliente;
-    public Estados Estado {get;set;}
+
+    private Estados estado;
+    public int Numero { get => numero;}
+    public string Observacion { get => observacion;}
+    public Estados Estado { get => estado; set => estado = value; }
 
     public Pedido(int nro, string obs, string nombre, string direcc, string telefono, string referencias)
     {
-        Numero = nro;
-        Observacion = obs;
+        numero = nro;
+        observacion = obs;
         Estado = Estados.Preparación;
         cliente = new Cliente(nombre, direcc, telefono, referencias);
     }

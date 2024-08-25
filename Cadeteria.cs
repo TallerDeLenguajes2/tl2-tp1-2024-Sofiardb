@@ -18,32 +18,38 @@ public class Cadeteria
         this.nombre = nombre;
         this.telefono = telefono;
         this.cadetes = cadetes;
-        cadetes.OrderDescending();
     }
 
     public void AsignarPedido(Pedido pedido)
     {
-        cadetes[cadetes.Count-1].Pedidos.Add(pedido);
-        cadetes.OrderDescending();
-        
+        List<string> opcionesMenu = new List<string>();
+        foreach (var cadete in cadetes)
+        {
+            opcionesMenu.Add(cadete.Nombre); 
+        }
+        string[] opcionesCadetes = opcionesMenu.ToArray();
+        Menu menuDeSeleccion = new Menu("Seleccione el cadete al que asignará el pedido", opcionesCadetes);
+        int seleccion = menuDeSeleccion.MenuDisplay();
+        cadetes[seleccion].Pedidos.Add(pedido);
+
     }
 
     public void ReasignarPedido(int numero)
     {
         var cadeteConPedido = cadetes.Where(c => c.Pedidos.Any(p => p.Numero == numero)).ToList();
-        if (cadeteConPedido != null)
+        if (cadeteConPedido.Count != 0)
         {
             var cadetesDisponibles = cadetes.Where(c => c.Nombre != cadeteConPedido[0].Nombre).ToList();
             List<string> opcionesMenu = new List<string>();
-            Pedido pedidoAResignar = cadeteConPedido[0].DarDeBajaPedido(numero);
+            Pedido pedidoAReasignar = cadeteConPedido[0].DarDeBajaPedido(numero);
             foreach (var cadete in cadetesDisponibles)
             {
-            opcionesMenu.Add(cadete.Nombre); 
+                opcionesMenu.Add(cadete.Nombre); 
             }
             string[] opcionesCadetes = opcionesMenu.ToArray();
             Menu menuDeSeleccion = new Menu("Seleccione el cadete al que reasignará el pedido", opcionesCadetes);
             int seleccion = menuDeSeleccion.MenuDisplay();
-            cadetesDisponibles[seleccion].Pedidos.Add(pedidoAResignar);  
+            cadetesDisponibles[seleccion].Pedidos.Add(pedidoAReasignar);  
         }else
         {
             Console.WriteLine("El número ingresado no se corresponde con ningun pedido");
@@ -51,6 +57,28 @@ public class Cadeteria
         
     }
 
+    public void CambiarEstadoDelPedido(int numero)
+    {
+        var cadeteConPedido = cadetes.Where(c => c.Pedidos.Any(p => p.Numero == numero)).ToList();
+        if (cadeteConPedido.Count != 0)
+        {
+            Menu menuDeSeleccion = new Menu("Seleccione el estado al que desea cambiar", ["En camino", "Entregado"]);
+            int seleccion = menuDeSeleccion.MenuDisplay();
+            switch (seleccion)
+            {
+                case 0:
+                    cadeteConPedido[0].RetirarPedido(numero);
+                    break;
+                case 1:
+                    cadeteConPedido[0].CompletarPedido(numero);
+                    break;
+            }
+        }else
+        {
+            Console.WriteLine("El número ingresado no se corresponde con ningún pedido"); 
+        }
+
+    }
     public void MostrarJornalesYEnvios()
     {
         int totalEnvios = 0;
@@ -60,7 +88,7 @@ public class Cadeteria
             Console.WriteLine($"{cadete.Nombre}-${pago}");
             totalEnvios += cadete.CantidadDePedidosCompletados();
         }
-        float promedioEnviosPorCadete = totalEnvios/cadetes.Count;
+        float promedioEnviosPorCadete = (float)totalEnvios/cadetes.Count;
         Console.WriteLine($"Total-Envios: {totalEnvios}"); 
         Console.WriteLine($"Promedio de envios completado por cadete: {promedioEnviosPorCadete}");
     }
