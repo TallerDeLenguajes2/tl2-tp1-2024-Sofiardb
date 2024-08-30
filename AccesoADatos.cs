@@ -1,4 +1,15 @@
 
+public class AccesoADatos
+{
+    public bool Existe(string ruta)
+    {
+        return File.Exists(ruta);
+    }
+
+    public virtual
+
+    
+}
 public class HelperDeCSV
 {
     public bool Existe(string nombreArchivo)

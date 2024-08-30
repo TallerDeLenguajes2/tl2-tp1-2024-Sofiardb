@@ -31,6 +31,19 @@ namespace Sistema
             
         }
 
+        public static int ElegirCadete(List<Cadete> cadetes)
+        {
+            List<string> opcionesMenu = new List<string>();
+            foreach (var cadete in cadetes)
+            {
+                opcionesMenu.Add(cadete.Nombre); 
+            }
+            string[] opcionesCadetes = opcionesMenu.ToArray();
+            Menu menuDeSeleccion = new Menu("Seleccione el cadete al que asignará el pedido", opcionesCadetes);
+            int seleccion = menuDeSeleccion.MenuDisplay();
+            return seleccion;
+        }
+
         public static void MostrarPedido(Pedido pedido)
         {
             if (pedido != null)
@@ -39,6 +52,10 @@ namespace Sistema
                 Console.WriteLine($"Observaciones: {pedido.Observacion}");
                 Console.WriteLine($"Estado: {pedido.Estado}");
                 pedido.VerDatosCliente();
+                if(pedido.CadeteAsignado != null)
+                {
+                    Console.WriteLine($"Cadete Asignado: {pedido.CadeteAsignado.Nombre}");
+                }
             }else
             {
                 Console.WriteLine("El pedido no existe");
@@ -47,24 +64,35 @@ namespace Sistema
 
         public static void MostrarPedidosSinEntregar(Cadeteria cadeteria)
         {
-            foreach (var cadete in cadeteria.Cadetes)
+            var pedidosSinEntregar = cadeteria.Pedidos.Where(p => p.Estado != Estados.Entregado).ToList();
+            if(pedidosSinEntregar.Count != 0)
             {
-                Console.WriteLine($"Cadete-{cadete.Nombre}");
-                var pedidosSinEntregar = cadete.Pedidos.Where(p => p.Estado != Estados.Entregado).ToList();
-                if(pedidosSinEntregar.Count != 0)
+                foreach (var pedido in pedidosSinEntregar)
                 {
-                    foreach (var pedido in pedidosSinEntregar)
-                    {
-                        MostrarPedido(pedido);
-                    }          
-                }else
-                {
-                    Console.WriteLine("El cadete no tiene pedidos sin entregar");
-                }
+                    MostrarPedido(pedido);
+                }          
+            }else
+            {
+                Console.WriteLine("El cadete no tiene pedidos sin entregar");
             }
-
+            
         }
+        public static void MostrarPedidosSinCadete(Cadeteria cadeteria)
+        {    
+            var pedidosSinCadete = cadeteria.Pedidos.Where(p => p.CadeteAsignado.Nombre == null).ToList();
+            if(pedidosSinCadete.Count != 0)
+            {
+                Console.WriteLine("Pedidos sin asignar");
+                foreach (var pedido in pedidosSinCadete)
+                {
+                    MostrarPedido(pedido);
+                }          
+            }else
+            {
+                Console.WriteLine("No hay pedidos sin asignar");
+            }
+        }
+    }
 
         
-    }
 }

@@ -5,7 +5,6 @@ HelperDeCSV helperCSV = new HelperDeCSV();
 if(helperCSV.Existe(nombreArchivoCadetes) && helperCSV.Existe(nombreArchivoCadeteria))
 {
     int operacion;
-    List<Pedido> pedidosSinAsignar = new List<Pedido>();
     int nroPedido = 0;
     List<Cadete> cadetes = helperCSV.LeerCadetes(nombreArchivoCadetes);
     string[] infoCadeteria = helperCSV.LeerCadeteria(nombreArchivoCadeteria).Split(";");
@@ -20,21 +19,20 @@ if(helperCSV.Existe(nombreArchivoCadetes) && helperCSV.Existe(nombreArchivoCadet
             case 0:
                 nroPedido++;
                 Pedido pedidoNuevo = Funciones.DarDeAltaPedido(nroPedido);
-                pedidosSinAsignar.Add(pedidoNuevo);
+                cadeteria.GuardarPedido(pedidoNuevo);
                 Console.ReadKey();
                 break;
             case 1:
-                if(pedidosSinAsignar.Count != 0)
+                Funciones.MostrarPedidosSinCadete(cadeteria);
+                int numeroPedido;
+                string ingresa;
+                do
                 {
-                    Console.WriteLine("El pedido a asignar es el siguiente: ");
-                    Funciones.MostrarPedido(pedidosSinAsignar[0]);
-                    Console.ReadKey();
-                    cadeteria.AsignarPedido(pedidosSinAsignar[0]);
-                    pedidosSinAsignar.RemoveAt(0);
-                }else
-                {
-                    Console.WriteLine("No hay pedidos para asignar");
-                }
+                    Console.WriteLine("Ingrese el numero del pedido que desea asignar:");
+                    ingresa = Console.ReadLine();
+                } while (!int.TryParse(ingresa, out numeroPedido));
+                int idCadete = Funciones.ElegirCadete(cadeteria.Cadetes);
+                cadeteria.AsignarCadeteAPedido(numeroPedido, idCadete);
                 break;
             case 2:
                 string num;

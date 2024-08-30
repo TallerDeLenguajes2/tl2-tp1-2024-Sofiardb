@@ -1,4 +1,6 @@
+using System.Data;
 using System.Runtime.Intrinsics.X86;
+using Sistema;
 
 public class Cadeteria
 {
@@ -7,49 +9,50 @@ public class Cadeteria
     private string telefono;
     private List<Cadete> cadetes;
 
+    private List<Pedido> pedidos;
+
 
     public string Nombre { get => nombre;}
 
     public string Telefono {get => telefono;}
     public List<Cadete> Cadetes { get => cadetes;}
+    public List<Pedido> Pedidos { get => pedidos; set => pedidos = value; }
 
     public Cadeteria(string nombre, string telefono, List<Cadete> cadetes)
     {
         this.nombre = nombre;
         this.telefono = telefono;
         this.cadetes = cadetes;
+        pedidos = new List<Pedido>();
     }
 
-    public void AsignarPedido(Pedido pedido)
+    public void GuardarPedido(Pedido pedido)
     {
-        List<string> opcionesMenu = new List<string>();
-        foreach (var cadete in cadetes)
-        {
-            opcionesMenu.Add(cadete.Nombre); 
-        }
-        string[] opcionesCadetes = opcionesMenu.ToArray();
-        Menu menuDeSeleccion = new Menu("Seleccione el cadete al que asignará el pedido", opcionesCadetes);
-        int seleccion = menuDeSeleccion.MenuDisplay();
-        cadetes[seleccion].Pedidos.Add(pedido);
+        Pedidos.Add(pedido);
+    }
+    public void AsignarCadeteAPedido(int numPedido, int idCadete)
+    {
+       var cadeteElegido = cadetes.Where(c => c.Id == idCadete).ToList();
+       var pedidoElegido = pedidos.Where(p => p.Numero == numPedido).ToList();
+       if(cadeteElegido != null && pedidoElegido != null)
+       {
+            pedidoElegido[0].CadeteAsignado = cadeteElegido[0];
+       }else
+       {
+            Console.WriteLine("No existe el pedido y/o cadete elegido");
+       }
 
     }
 
     public void ReasignarPedido(int numero)
     {
-        var cadeteConPedido = cadetes.Where(c => c.Pedidos.Any(p => p.Numero == numero)).ToList();
-        if (cadeteConPedido.Count != 0)
+        var pedidoAReasignar = Pedidos.Where(p => p.Numero == numero).ToList();
+        if (pedidoAReasignar.Count != 0)
         {
-            var cadetesDisponibles = cadetes.Where(c => c.Nombre != cadeteConPedido[0].Nombre).ToList();
-            List<string> opcionesMenu = new List<string>();
-            Pedido pedidoAReasignar = cadeteConPedido[0].DarDeBajaPedido(numero);
-            foreach (var cadete in cadetesDisponibles)
-            {
-                opcionesMenu.Add(cadete.Nombre); 
-            }
-            string[] opcionesCadetes = opcionesMenu.ToArray();
-            Menu menuDeSeleccion = new Menu("Seleccione el cadete al que reasignará el pedido", opcionesCadetes);
-            int seleccion = menuDeSeleccion.MenuDisplay();
-            cadetesDisponibles[seleccion].Pedidos.Add(pedidoAReasignar);  
+            var cadetesDisponibles = cadetes.Where(c => c.Nombre != pedidoAReasignar[0].CadeteAsignado.Nombre).ToList();
+            int seleccion = Funciones.ElegirCadete(cadetesDisponibles);
+            pedidoAReasignar[0].CadeteAsignado = cadetesDisponibles[seleccion];
+            
         }else
         {
             Console.WriteLine("El número ingresado no se corresponde con ningun pedido");
@@ -59,18 +62,18 @@ public class Cadeteria
 
     public void CambiarEstadoDelPedido(int numero)
     {
-        var cadeteConPedido = cadetes.Where(c => c.Pedidos.Any(p => p.Numero == numero)).ToList();
-        if (cadeteConPedido.Count != 0)
+        var pedidoAModificar = pedidos.Where(p => p.Numero == numero).ToList();
+        if (pedidoAModificar.Count != 0)
         {
             Menu menuDeSeleccion = new Menu("Seleccione el estado al que desea cambiar", ["En camino", "Entregado"]);
             int seleccion = menuDeSeleccion.MenuDisplay();
             switch (seleccion)
             {
                 case 0:
-                    cadeteConPedido[0].RetirarPedido(numero);
+                    pedidoAModificar[0].Estado = Estados.EnCamino;
                     break;
                 case 1:
-                    cadeteConPedido[0].CompletarPedido(numero);
+                    pedidoAModificar[0].Estado = Estados.Entregado;
                     break;
             }
         }else
@@ -79,14 +82,27 @@ public class Cadeteria
         }
 
     }
+
+    private int CalculoPedidosCompletados(int idCadete)
+    {
+        var pedidosEntregados = pedidos.Where(p => p.Estado == Estados.Entregado).ToList();
+        var numPedidosCompletados = pedidosEntregados.Count(p => p.CadeteAsignado.Id == idCadete);
+        return numPedidosCompletados;
+    }
+
+    private float JornalACobrar(int pedidosCompletados)
+    {
+        return 500*pedidosCompletados;
+    }
     public void MostrarJornalesYEnvios()
     {
         int totalEnvios = 0;
         foreach (var cadete in cadetes)
         {
-            float pago = cadete.JornalACobrar();
+            int numPedidosCompletados = CalculoPedidosCompletados(cadete.Id);
+            float pago = JornalACobrar(numPedidosCompletados);
             Console.WriteLine($"{cadete.Nombre}-${pago}");
-            totalEnvios += cadete.CantidadDePedidosCompletados();
+            totalEnvios += numPedidosCompletados;
         }
         float promedioEnviosPorCadete = (float)totalEnvios/cadetes.Count;
         Console.WriteLine($"Total-Envios: {totalEnvios}"); 
