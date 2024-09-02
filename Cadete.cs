@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 public class Cadete
 {
@@ -11,6 +12,7 @@ public class Cadete
     {
     }
 
+    [JsonConstructor]
     public Cadete(int id, string nombre, string direccion, string telefono)
     {
         this.id = id;

@@ -1,5 +1,6 @@
 using System.Data;
 using System.Runtime.Intrinsics.X86;
+using System.Text.Json.Serialization;
 using Sistema;
 
 public class Cadeteria
@@ -15,14 +16,13 @@ public class Cadeteria
     public string Nombre { get => nombre;}
 
     public string Telefono {get => telefono;}
-    public List<Cadete> Cadetes { get => cadetes;}
+    public List<Cadete> Cadetes { get => cadetes; set => cadetes = value;}
     public List<Pedido> Pedidos { get => pedidos; set => pedidos = value; }
 
-    public Cadeteria(string nombre, string telefono, List<Cadete> cadetes)
+    public Cadeteria(string nombre, string telefono)
     {
         this.nombre = nombre;
         this.telefono = telefono;
-        this.cadetes = cadetes;
         pedidos = new List<Pedido>();
     }
 

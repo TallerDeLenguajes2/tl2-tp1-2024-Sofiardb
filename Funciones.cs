@@ -77,7 +77,7 @@ namespace Sistema
             }
             
         }
-        public static void MostrarPedidosSinCadete(Cadeteria cadeteria)
+        public static bool MostrarPedidosSinCadete(Cadeteria cadeteria)
         {    
             var pedidosSinCadete = cadeteria.Pedidos.Where(p => p.CadeteAsignado.Nombre == null).ToList();
             if(pedidosSinCadete.Count != 0)
@@ -86,10 +86,23 @@ namespace Sistema
                 foreach (var pedido in pedidosSinCadete)
                 {
                     MostrarPedido(pedido);
-                }          
+                }
+                return true;          
             }else
             {
                 Console.WriteLine("No hay pedidos sin asignar");
+                return false;
+            }
+        }
+        public static void MostrarCadetes(List<Cadete> cadetes1)
+        {
+            foreach (var cadete in cadetes1)
+            {
+                Console.WriteLine($"Id: {cadete.Id}");
+                Console.WriteLine($"Id: {cadete.Nombre}");
+                Console.WriteLine($"Id: {cadete.Telefono}");
+                Console.WriteLine($"Id: {cadete.Direccion}");
+                
             }
         }
     }
