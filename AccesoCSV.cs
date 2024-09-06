@@ -1,45 +1,58 @@
 
 public class AccesoCSV : IAccesoADatos
 {
-    public bool Existe(string nombreArchivo)
+    private string archivoCadeteria;
+
+    private string archivoCadetes;
+    public bool Existe(string ruta)
     {
-        string ruta = "csv/"+nombreArchivo;
+
         return File.Exists(ruta);
     }
 
-    public List<Cadete> LeerCadetes(string nombreArchivo)
+    public List<Cadete> LeerCadetes()
     {
-        string ruta = "csv/"+nombreArchivo;
+        string ruta = "csv/"+archivoCadetes;
         List<Cadete> cadetes = new List<Cadete>();
-        using (var archivoOpen = new FileStream(ruta, FileMode.Open))
-        {
-            using (var strReader = new StreamReader(archivoOpen))
+        if (Existe(ruta))
+        {  
+            using (var archivoOpen = new FileStream(ruta, FileMode.Open))
             {
-                string linea;
-                while ((linea = strReader.ReadLine()) != null)
+                using (var strReader = new StreamReader(archivoOpen))
                 {
-                    var datos = linea.Split(';');
-                    var cadete = new Cadete(int.Parse(datos[0]), datos[1],  datos[2], datos[3]);
-                    cadetes.Add(cadete);
+                    string linea;
+                    while ((linea = strReader.ReadLine()) != null)
+                    {
+                        var datos = linea.Split(';');
+                        var cadete = new Cadete(int.Parse(datos[0]), datos[1],  datos[2], datos[3]);
+                        cadetes.Add(cadete);
+                    }
                 }
             }
         }
         return cadetes;
     }
-    public Cadeteria LeerCadeteria(string nombreArchivo)
+    public Cadeteria LeerCadeteria()
     {
-        string ruta = "csv/"+nombreArchivo;
+        string ruta = "csv/"+archivoCadeteria;
+        Cadeteria cadeteria;
         string informacionCadeteria;
-        using (var archivoOpen = new FileStream(ruta, FileMode.Open))
+        if (Existe(ruta))
         {
-            using (var strReader = new StreamReader(archivoOpen))
+            using (var archivoOpen = new FileStream(ruta, FileMode.Open))
             {
-                informacionCadeteria = strReader.ReadToEnd();
-                archivoOpen.Close();
-            }
-        }  
-        string[] datos = informacionCadeteria.Split(";");
-        Cadeteria cadeteria = new Cadeteria(datos[0],datos[1]);
+                using (var strReader = new StreamReader(archivoOpen))
+                {
+                    informacionCadeteria = strReader.ReadToEnd();
+                    archivoOpen.Close();
+                }
+            }  
+            string[] datos = informacionCadeteria.Split(";");
+            cadeteria = new Cadeteria(datos[0],datos[1]);
+        }else
+        {
+            cadeteria = new Cadeteria();
+        }
         return cadeteria;
     }
     

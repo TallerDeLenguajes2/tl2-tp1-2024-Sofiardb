@@ -2,41 +2,65 @@ using System.Text.Json;
 
 public class AccesoJson : IAccesoADatos
 {
-    public bool Existe(string nombreArchivo)
+    private string archivoCadeteria;
+
+    private string archivoCadetes;
+
+    public AccesoJson()
     {
-        string ruta = "json/"+nombreArchivo;
+        archivoCadeteria = "Cadeteria.json";
+        archivoCadetes = "Cadetes.json";
+    }
+
+    public bool Existe(string ruta)
+    {
         return File.Exists(ruta);
     }
 
-    public List<Cadete> LeerCadetes(string nombreArchivo)
+    public List<Cadete> LeerCadetes()
     {
-        string ruta = "json/"+nombreArchivo;
+        string ruta = "json/"+archivoCadetes;
+        List<Cadete> cadetes; 
         string cadetesJson;
-        using (var archivoOpen = new FileStream(ruta, FileMode.Open))
+        if (Existe(ruta))
         {
-            using (var strReader = new StreamReader(archivoOpen))
+            using (var archivoOpen = new FileStream(ruta, FileMode.Open))
             {
-                cadetesJson = strReader.ReadToEnd();
-                archivoOpen.Close();
+                using (var strReader = new StreamReader(archivoOpen))
+                {
+                    cadetesJson = strReader.ReadToEnd();
+                    archivoOpen.Close();
+                }
             }
+            cadetes = JsonSerializer.Deserialize<List<Cadete>>(cadetesJson);
+        }else
+        {
+            cadetes = new List<Cadete>();
         }
-        var cadetes = JsonSerializer.Deserialize<List<Cadete>>(cadetesJson);
         return cadetes;
     }
 
-    public Cadeteria LeerCadeteria(string nombreArchivo)
+    public Cadeteria LeerCadeteria()
     {
-        string ruta = "json/"+nombreArchivo;
+        string ruta = "json/"+archivoCadeteria;
         string cadeteriaJson;
-        using (var archivoOpen = new FileStream(ruta, FileMode.Open))
-        {
-            using (var strReader = new StreamReader(archivoOpen))
+        Cadeteria cadeteria;
+        if (Existe(ruta))
+        { 
+            using (var archivoOpen = new FileStream(ruta, FileMode.Open))
             {
-                cadeteriaJson = strReader.ReadToEnd();
-                archivoOpen.Close();
+                using (var strReader = new StreamReader(archivoOpen))
+                {
+                    cadeteriaJson = strReader.ReadToEnd();
+                    archivoOpen.Close();
+                }
             }
+            cadeteria = JsonSerializer.Deserialize<Cadeteria>(cadeteriaJson);
+            
+        }else
+        {
+            cadeteria = new Cadeteria();
         }
-        var cadeteria = JsonSerializer.Deserialize<Cadeteria>(cadeteriaJson);
         return cadeteria;
     }
 }

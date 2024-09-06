@@ -16,9 +16,18 @@ public class Cadeteria
     public string Nombre { get => nombre;}
 
     public string Telefono {get => telefono;}
-    public List<Cadete> Cadetes { get => cadetes; set => cadetes = value;}
+    public List<Cadete> Cadetes { get => cadetes;}
     public List<Pedido> Pedidos { get => pedidos; set => pedidos = value; }
 
+    public Cadeteria()
+    {
+
+    }
+
+    public void AsignarCadetes(List<Cadete> cadetes)
+    {
+        this.cadetes = cadetes; 
+    }
     public Cadeteria(string nombre, string telefono)
     {
         this.nombre = nombre;
@@ -41,11 +50,11 @@ public class Cadeteria
     public bool AsignarCadeteAPedido(int numPedido, int idCadete)
     {
        bool success = false;
-       var cadeteElegido = cadetes.Where(c => c.Id == idCadete).ToList();
-       var pedidoElegido = pedidos.Where(p => p.Numero == numPedido).ToList();
+       var cadeteElegido = cadetes.Find(c => c.Id == idCadete);
+       var pedidoElegido = pedidos.Find(p => p.Numero == numPedido);
        if(cadeteElegido != null && pedidoElegido != null)
        {
-            pedidoElegido[0].CadeteAsignado = cadeteElegido[0];
+            pedidoElegido.CadeteAsignado = cadeteElegido;
             success = true;
        }
        return success;
@@ -56,12 +65,12 @@ public class Cadeteria
     public bool ReasignarPedido(int numero)
     {
         bool success = false;
-        var pedidoAReasignar = Pedidos.Where(p => p.Numero == numero).ToList();
-        if (pedidoAReasignar.Count != 0)
+        var pedidoAReasignar = Pedidos.Find(p => p.Numero == numero);
+        if (pedidoAReasignar != null)
         {
-            var cadetesDisponibles = cadetes.Where(c => c.Nombre != pedidoAReasignar[0].CadeteAsignado.Nombre).ToList();
+            var cadetesDisponibles = cadetes.Where(c => c.Nombre != pedidoAReasignar.CadeteAsignado.Nombre).ToList();
             int seleccion = Funciones.ElegirCadete(cadetesDisponibles);
-            pedidoAReasignar[0].CadeteAsignado = cadetesDisponibles[seleccion];
+            pedidoAReasignar.CadeteAsignado = cadetesDisponibles[seleccion];
             success = true;
         }
         return success;
@@ -70,16 +79,16 @@ public class Cadeteria
 
     public void CambiarEstadoDelPedido(int numero, int estado)
     {
-        var pedidoAModificar = pedidos.Where(p => p.Numero == numero).ToList();
-        if (pedidoAModificar.Count != 0)
+        var pedidoAModificar = pedidos.Find(p => p.Numero == numero);
+        if (pedidoAModificar != null)
         {
             switch (estado)
             {
                 case 0:
-                    pedidoAModificar[0].Estado = Estados.EnCamino;
+                    pedidoAModificar.Estado = Estados.EnCamino;
                     break;
                 case 1:
-                    pedidoAModificar[0].Estado = Estados.Entregado;
+                    pedidoAModificar.Estado = Estados.Entregado;
                     break;
             }
         }
