@@ -2,7 +2,7 @@ namespace Sistema
 {    
     public class Funciones
     {
-        public static Pedido DarDeAltaPedido(int nroPedido)
+        public static string[] DarDeAltaPedido(int nroPedido)
         {
             string observacionPedido;
             string nombreCliente;
@@ -26,9 +26,8 @@ namespace Sistema
                     Console.WriteLine("Debe rellenar correctamente los campos");
                 }
             } while (string.IsNullOrWhiteSpace(observacionPedido) || string.IsNullOrWhiteSpace(nombreCliente) || string.IsNullOrWhiteSpace(direccCliente) || string.IsNullOrWhiteSpace(telefonoCliente));
-            Pedido pedidoNuevo = new Pedido(nroPedido,observacionPedido,nombreCliente,direccCliente,telefonoCliente,referenciasCliente);
-            return pedidoNuevo;
-            
+            string[] informacionPedido = [observacionPedido, nombreCliente, direccCliente, telefonoCliente, referenciasCliente]; 
+            return informacionPedido;
         }
 
         public static int ElegirCadete(List<Cadete> cadetes)
@@ -94,16 +93,33 @@ namespace Sistema
                 return false;
             }
         }
-        public static void MostrarCadetes(List<Cadete> cadetes1)
+
+        public static int ElegirEstadoDelPedido()
+        {   
+            Menu menuDeSeleccion = new Menu("Seleccione el estado al que desea cambiar", ["En camino", "Entregado"]);
+            int seleccion = menuDeSeleccion.MenuDisplay();
+            return seleccion;
+        }
+
+        public static void MostrarJornalesYEnvios(Cadeteria cadeteria)
         {
-            foreach (var cadete in cadetes1)
+            int totalEnvios = 0;
+            foreach (var cadete in cadeteria.Cadetes)
             {
-                Console.WriteLine($"Id: {cadete.Id}");
-                Console.WriteLine($"Id: {cadete.Nombre}");
-                Console.WriteLine($"Id: {cadete.Telefono}");
-                Console.WriteLine($"Id: {cadete.Direccion}");
-                
+                int numPedidosCompletados = cadeteria.CalculoPedidosCompletados(cadete.Id);
+                float pago = cadeteria.JornalACobrar(numPedidosCompletados);
+                Console.WriteLine($"{cadete.Nombre}-${pago}");
+                totalEnvios += numPedidosCompletados;
             }
+            float promedioEnviosPorCadete = (float)totalEnvios/cadeteria.Cadetes.Count;
+            Console.WriteLine($"Total-Envios: {totalEnvios}"); 
+            Console.WriteLine($"Promedio de envios completado por cadete: {promedioEnviosPorCadete}");
+
+        }
+
+        public static void MostrarMensajeDeError()
+        {
+            Console.WriteLine("ERROR. Los datos ingresados no son correctos");
         }
     }
 

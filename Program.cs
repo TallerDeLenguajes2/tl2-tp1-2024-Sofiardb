@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Sistema;
+﻿using Sistema;
 Menu menuArchivos = new Menu("Elija el archivo con el que desea trabajar", ["Json", "CSV"]);
 int eleccion = menuArchivos.MenuDisplay();
 List<Cadete> cadetes = null;
@@ -47,8 +46,8 @@ do
             
         case 0:
             nroPedido++;
-            Pedido pedidoNuevo = Funciones.DarDeAltaPedido(nroPedido);
-            cadeteria.GuardarPedido(pedidoNuevo);
+            string[] infoPedido = Funciones.DarDeAltaPedido(nroPedido);
+            cadeteria.GuardarPedido(infoPedido);
             Console.ReadKey();
             break;
         case 1:
@@ -63,7 +62,10 @@ do
                     ingresa = Console.ReadLine();
                 } while (!int.TryParse(ingresa, out numeroPedido));
                 int idCadete = Funciones.ElegirCadete(cadeteria.Cadetes);
-                cadeteria.AsignarCadeteAPedido(numeroPedido, idCadete);
+                if(!cadeteria.AsignarCadeteAPedido(numeroPedido, idCadete))
+                {
+                    Funciones.MostrarMensajeDeError();
+                }
             }
             break;
         case 2:
@@ -74,7 +76,8 @@ do
                 Console.WriteLine("Ingrese el numero de pedido cuyo estado desea modificar: ");
                 num = Console.ReadLine();
             } while (!int.TryParse(num, out numIngresado));
-            cadeteria.CambiarEstadoDelPedido(numIngresado);
+            int estado = Funciones.ElegirEstadoDelPedido();
+            cadeteria.CambiarEstadoDelPedido(numIngresado, estado);
             Console.ReadKey();
             break;
         case 3:
@@ -87,12 +90,15 @@ do
                 Console.WriteLine("Ingrese el numero del pedido que desea reasignar:");
                 ingreso = Console.ReadLine();
             } while (!int.TryParse(ingreso, out numPedido));
-            cadeteria.ReasignarPedido(numPedido);
+            if(!cadeteria.ReasignarPedido(numPedido))
+            {
+                Funciones.MostrarMensajeDeError();      
+            }
             Console.ReadKey();
             break;
         case 4:
             Console.WriteLine("Final de Jornada-Informe");
-            cadeteria.MostrarJornalesYEnvios();
+            Funciones.MostrarJornalesYEnvios(cadeteria);
             Console.ReadKey();
             break;
         }
