@@ -67,13 +67,16 @@ do
             Console.WriteLine("Pedidos disponibles para reasignar");
             string ingreso;
             int numPedido;
-            Funciones.MostrarPedidosSinEntregar(cadeteria);
+            List<Pedido> pedidosSinEntregar = cadeteria.PedidosSinCompletar();
+            Funciones.MostrarPedidosSinEntregar(pedidosSinEntregar);
             do
             {
                 Console.WriteLine("Ingrese el numero del pedido que desea reasignar:");
                 ingreso = Console.ReadLine();
             } while (!int.TryParse(ingreso, out numPedido));
-            if(!cadeteria.ReasignarPedido(numPedido))
+            Console.WriteLine("Elija al cadete que le reasignará el pedido");
+            int cadeteSeleccionado = Funciones.ElegirCadete(cadeteria.Cadetes);
+            if(!cadeteria.ReasignarPedido(numPedido, cadeteSeleccionado))
             {
                 Funciones.MostrarMensajeDeError();      
             }

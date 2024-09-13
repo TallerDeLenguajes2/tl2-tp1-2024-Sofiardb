@@ -47,6 +47,13 @@ public class Cadeteria
         Pedido pedido = CrearPedido(informacionPedido);
         pedidos.Add(pedido);
     }
+
+    public List<Pedido> PedidosSinCompletar()
+    {
+        var pedidosSinEntregar = pedidos.Where(p => p.Estado != Estados.Entregado).ToList();
+        return pedidosSinEntregar;
+    }
+
     public bool AsignarCadeteAPedido(int numPedido, int idCadete)
     {
        bool success = false;
@@ -62,15 +69,14 @@ public class Cadeteria
     }
 
 
-    public bool ReasignarPedido(int numero)
+    public bool ReasignarPedido(int numero, int idCadete)
     {
         bool success = false;
         var pedidoAReasignar = pedidos.Find(p => p.Numero == numero);
+        var cadeteSeleccionado = cadetes.Find(c => c.Id == idCadete);
         if (pedidoAReasignar != null)
         {
-            var cadetesDisponibles = cadetes.Where(c => c.Nombre != pedidoAReasignar.CadeteAsignado.Nombre).ToList();
-            int seleccion = Funciones.ElegirCadete(cadetesDisponibles);
-            pedidoAReasignar.CadeteAsignado = cadetesDisponibles[seleccion];
+            pedidoAReasignar.CadeteAsignado = cadeteSeleccionado;
             success = true;
         }
         return success;

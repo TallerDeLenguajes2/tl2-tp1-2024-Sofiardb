@@ -61,9 +61,9 @@ namespace Sistema
             }
         }
 
-        public static void MostrarPedidosSinEntregar(Cadeteria cadeteria)
+        public static void MostrarPedidosSinEntregar(List<Pedido> pedidosSinEntregar)
         {
-            var pedidosSinEntregar = cadeteria.Pedidos.Where(p => p.Estado != Estados.Entregado).ToList();
+
             if(pedidosSinEntregar.Count != 0)
             {
                 foreach (var pedido in pedidosSinEntregar)
