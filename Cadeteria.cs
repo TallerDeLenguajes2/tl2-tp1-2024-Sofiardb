@@ -17,7 +17,7 @@ public class Cadeteria
 
     public string Telefono {get => telefono;}
     public List<Cadete> Cadetes { get => cadetes;}
-    public List<Pedido> Pedidos { get => pedidos; set => pedidos = value; }
+    public List<Pedido> Pedidos { get => pedidos; }
 
     public Cadeteria()
     {
@@ -37,7 +37,7 @@ public class Cadeteria
 
     private Pedido CrearPedido(string[] informacionPedido)
     {
-        int numPedido = Pedidos.Count + 1;
+        int numPedido = pedidos.Count + 1;
         Pedido pedidoNuevo = new Pedido(numPedido, informacionPedido[0], informacionPedido[1], informacionPedido[2], informacionPedido[3], informacionPedido[4]);
         return pedidoNuevo;
     }
@@ -45,7 +45,7 @@ public class Cadeteria
     public void GuardarPedido(string[] informacionPedido)
     {
         Pedido pedido = CrearPedido(informacionPedido);
-        Pedidos.Add(pedido);
+        pedidos.Add(pedido);
     }
     public bool AsignarCadeteAPedido(int numPedido, int idCadete)
     {
@@ -65,7 +65,7 @@ public class Cadeteria
     public bool ReasignarPedido(int numero)
     {
         bool success = false;
-        var pedidoAReasignar = Pedidos.Find(p => p.Numero == numero);
+        var pedidoAReasignar = pedidos.Find(p => p.Numero == numero);
         if (pedidoAReasignar != null)
         {
             var cadetesDisponibles = cadetes.Where(c => c.Nombre != pedidoAReasignar.CadeteAsignado.Nombre).ToList();
